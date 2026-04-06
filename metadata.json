@@ -1,0 +1,7 @@
+{
+  "name": "Gatherly",
+  "description": "A modern, full-stack event management platform similar to Meetup, featuring event discovery, organizer dashboards, and real-time RSVPs.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
