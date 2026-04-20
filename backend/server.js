@@ -7,8 +7,17 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const MONGODB_URI = process.env.MONGODB_URI || "mongodb+srv://jagrutikaulkar0_db_user:BQhtOOiB086fuxp1@cluster0.bcohx26.mongodb.net/";
-const JWT_SECRET = process.env.JWT_SECRET || "your_jwt_secret_here";
+const MONGODB_URI = process.env.MONGODB_URI;
+const JWT_SECRET = process.env.JWT_SECRET;
+const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173";
+
+if (!MONGODB_URI) {
+  throw new Error("Missing required env var: MONGODB_URI");
+}
+
+if (!JWT_SECRET) {
+  throw new Error("Missing required env var: JWT_SECRET");
+}
 
 // Mongoose Models
 const userSchema = new mongoose.Schema({
@@ -45,9 +54,18 @@ const Event = mongoose.model('Event', eventSchema);
 async function startServer() {
   const app = express();
   const PORT = process.env.PORT || 3000;
+  const allowedOrigins = FRONTEND_URL.split(',').map((origin) => origin.trim()).filter(Boolean);
 
-  app.use(cors());
+  app.use(cors({ origin: allowedOrigins }));
   app.use(express.json());
+
+  app.get('/health', (_req, res) => {
+    res.status(200).json({ ok: true, service: 'backend' });
+  });
+
+  app.get('/api/health', (_req, res) => {
+    res.status(200).json({ ok: true, service: 'backend' });
+  });
 
   // MongoDB Connection
   mongoose.connect(MONGODB_URI)
