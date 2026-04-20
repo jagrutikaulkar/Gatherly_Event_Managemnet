@@ -9,7 +9,7 @@ import {
   AlertCircle, CheckCircle2, Loader2, Edit, Trash2
 } from 'lucide-react';
 import { formatDate } from '../lib/utils';
-import axios from 'axios';
+import api from '../lib/api';
 
 export default function EventDetails() {
   const { id } = useParams();
@@ -26,7 +26,7 @@ export default function EventDetails() {
     const fetchEvent = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(`/api/events/${id}`);
+        const response = await api.get(`/api/events/${id}`);
         setEvent(response.data);
       } catch (err) {
         console.error("Fetch event error:", err);

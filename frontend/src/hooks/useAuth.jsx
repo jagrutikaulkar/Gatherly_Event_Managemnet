@@ -1,5 +1,5 @@
 import { useState, useEffect, createContext, useContext } from 'react';
-import axios from 'axios';
+import api from '../lib/api';
 
 const AuthContext = createContext({
   user: null,
@@ -28,7 +28,7 @@ export const AuthProvider = ({ children }) => {
 
   const fetchUser = async (token) => {
     try {
-      const response = await axios.get('/api/auth/me', {
+      const response = await api.get('/api/auth/me', {
         headers: { Authorization: `Bearer ${token}` }
       });
       setUser(response.data);
@@ -42,7 +42,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const login = async (email, password) => {
-    const response = await axios.post('/api/auth/login', { email, password });
+    const response = await api.post('/api/auth/login', { email, password });
     const { token, user: userData } = response.data;
     localStorage.setItem('token', token);
     setUser(userData);
@@ -50,7 +50,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const register = async (name, email, password, role) => {
-    await axios.post('/api/auth/register', { name, email, password, role });
+    await api.post('/api/auth/register', { name, email, password, role });
   };
 
   const logout = () => {
@@ -60,7 +60,7 @@ export const AuthProvider = ({ children }) => {
 
   const updateProfile = async (profileData) => {
     const token = localStorage.getItem('token');
-    const response = await axios.put('/api/auth/profile', profileData, {
+    const response = await api.put('/api/auth/profile', profileData, {
       headers: { Authorization: `Bearer ${token}` }
     });
     setUser(response.data);
@@ -70,7 +70,7 @@ export const AuthProvider = ({ children }) => {
   const getStats = async () => {
     const token = localStorage.getItem('token');
     if (!token) return null;
-    const response = await axios.get('/api/auth/stats', {
+    const response = await api.get('/api/auth/stats', {
       headers: { Authorization: `Bearer ${token}` }
     });
     return response.data;

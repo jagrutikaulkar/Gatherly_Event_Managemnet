@@ -7,7 +7,7 @@ import {
   Calendar, MapPin, Image as ImageIcon, AlignLeft, 
   Tag, Users, Clock, ArrowLeft, Loader2, Save, X
 } from 'lucide-react';
-import axios from 'axios';
+import api from '../lib/api';
 
 const CATEGORIES = ['Technology', 'Music', 'Lifestyle', 'Business', 'Art', 'Food', 'Sports'];
 
@@ -36,7 +36,7 @@ export default function CreateEvent() {
       const fetchEvent = async () => {
         try {
           setFetching(true);
-          const response = await axios.get(`/api/events/${id}`);
+          const response = await api.get(`/api/events/${id}`);
           const event = response.data;
           if (event.organizerId !== user?.id && user?.role !== 'admin') {
             navigate('/dashboard');
