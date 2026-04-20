@@ -54,7 +54,8 @@ const Event = mongoose.model('Event', eventSchema);
 async function startServer() {
   const app = express();
   const PORT = process.env.PORT || 3000;
-  const configuredOrigins = FRONTEND_URL.split(',').map((origin) => origin.trim()).filter(Boolean);
+  const normalizeOrigin = (origin) => origin.trim().replace(/^['\"]|['\"]$/g, "").replace(/\/$/, "");
+  const configuredOrigins = FRONTEND_URL.split(',').map(normalizeOrigin).filter(Boolean);
   const defaultOrigins = [
     "http://localhost:5173",
     "https://gatherly-event-managemnet-eight.vercel.app",
@@ -63,7 +64,12 @@ async function startServer() {
 
   app.use(cors({
     origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin)) {
+      if (!origin) {
+        callback(null, true);
+        return;
+      }
+      const incomingOrigin = normalizeOrigin(origin);
+      if (allowedOrigins.includes(incomingOrigin)) {
         callback(null, true);
         return;
       }
