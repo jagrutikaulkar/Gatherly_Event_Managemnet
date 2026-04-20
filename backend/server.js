@@ -54,9 +54,22 @@ const Event = mongoose.model('Event', eventSchema);
 async function startServer() {
   const app = express();
   const PORT = process.env.PORT || 3000;
-  const allowedOrigins = FRONTEND_URL.split(',').map((origin) => origin.trim()).filter(Boolean);
+  const configuredOrigins = FRONTEND_URL.split(',').map((origin) => origin.trim()).filter(Boolean);
+  const defaultOrigins = [
+    "http://localhost:5173",
+    "https://gatherly-event-managemnet-eight.vercel.app",
+  ];
+  const allowedOrigins = configuredOrigins.length > 0 ? configuredOrigins : defaultOrigins;
 
-  app.use(cors({ origin: allowedOrigins }));
+  app.use(cors({
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+        return;
+      }
+      callback(new Error("Not allowed by CORS"));
+    },
+  }));
   app.use(express.json());
 
   app.get('/health', (_req, res) => {
